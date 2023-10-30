@@ -1,0 +1,128 @@
+version: "3"
+
+services:
+  postgres-master-library:
+    image: bitnami/postgresql-repmgr:14.5.0
+    environment:
+      POSTGRESQL_POSTGRES_PASSWORD: TEREKHOV_214
+      POSTGRESQL_USERNAME: TEREKHOV_214
+      POSTGRESQL_PASSWORD: TEREKHOV_214
+      POSTGRESQL_DATABASE: TEREKHOV_214_library
+      REPMGR_PASSWORD: repmgrpassword
+      REPMGR_PRIMARY_HOST: postgres-master-library
+      REPMGR_PARTNER_NODES: postgres-master-library,postgres-slave-library
+      REPMGR_NODE_NAME: node-1
+      REPMGR_NODE_NETWORK_NAME: postgres-master-library
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./docker/db/scripts/library:/docker-entrypoint-initdb.d/
+      - postgres_master_data_library:/bitnami/postgresql
+
+  postgres-slave-library:
+    image: bitnami/postgresql-repmgr:14.5.0
+    environment:
+      POSTGRESQL_POSTGRES_PASSWORD: TEREKHOV_214
+      POSTGRESQL_USERNAME: TEREKHOV_214
+      POSTGRESQL_PASSWORD: TEREKHOV_214
+      POSTGRESQL_DATABASE: TEREKHOV_214_library
+      REPMGR_PASSWORD: repmgrpassword
+      REPMGR_PRIMARY_HOST: postgres-master-library
+      REPMGR_PARTNER_NODES: postgres-master-library,postgres-slave-library
+      REPMGR_NODE_NAME: node-2
+      REPMGR_NODE_NETWORK_NAME: postgres-slave-library
+    ports:
+      - "5433:5432"
+    depends_on:
+      - postgres-master-library
+    volumes:
+      - postgres_slave_data_library:/bitnami/postgresql
+
+  postgres-master-trains:
+    image: bitnami/postgresql-repmgr:14.5.0
+    environment:
+      POSTGRESQL_POSTGRES_PASSWORD: TEREKHOV_214
+      POSTGRESQL_USERNAME: TEREKHOV_214
+      POSTGRESQL_PASSWORD: TEREKHOV_214
+      POSTGRESQL_DATABASE: TEREKHOV_214_trains
+      REPMGR_PASSWORD: repmgrpassword
+      REPMGR_PRIMARY_HOST: postgres-master-trains
+      REPMGR_PARTNER_NODES: postgres-master-trains,postgres-slave-trains
+      REPMGR_NODE_NAME: node-3
+      REPMGR_NODE_NETWORK_NAME: postgres-master-trains
+    ports:
+      - "5434:5432"
+    volumes:
+      - ./docker/db/scripts/trains:/docker-entrypoint-initdb.d/
+      - postgres_master_data_trains:/bitnami/postgresql
+
+  postgres-slave-trains:
+    image: bitnami/postgresql-repmgr:14.5.0
+    environment:
+      POSTGRESQL_POSTGRES_PASSWORD: TEREKHOV_214
+      POSTGRESQL_USERNAME: TEREKHOV_214
+      POSTGRESQL_PASSWORD: TEREKHOV_214
+      POSTGRESQL_DATABASE: TEREKHOV_214_trains
+      REPMGR_PASSWORD: repmgrpassword
+      REPMGR_PRIMARY_HOST: postgres-master-trains
+      REPMGR_PARTNER_NODES: postgres-master-trains,postgres-slave-trains
+      REPMGR_NODE_NAME: node-4
+      REPMGR_NODE_NETWORK_NAME: postgres-slave-trains
+    ports:
+      - "5435:5432"
+    depends_on:
+      - postgres-master-trains
+    volumes:
+      - postgres_slave_data_trains:/bitnami/postgresql
+
+  postgres-master-hospital:
+    image: bitnami/postgresql-repmgr:14.5.0
+    environment:
+      POSTGRESQL_POSTGRES_PASSWORD: TEREKHOV_214
+      POSTGRESQL_USERNAME: TEREKHOV_214
+      POSTGRESQL_PASSWORD: TEREKHOV_214
+      POSTGRESQL_DATABASE: TEREKHOV_214_hospital
+      REPMGR_PASSWORD: repmgrpassword
+      REPMGR_PRIMARY_HOST: postgres-master-hospital
+      REPMGR_PARTNER_NODES: postgres-master-hospital,postgres-slave-hospital
+      REPMGR_NODE_NAME: node-5
+      REPMGR_NODE_NETWORK_NAME: postgres-master-hospital
+    ports:
+      - "5436:5432"
+    volumes:
+      - ./docker/db/scripts/hospital:/docker-entrypoint-initdb.d/
+      - postgres_master_data_hospital:/bitnami/postgresql
+
+  postgres-slave-hospital:
+    image: bitnami/postgresql-repmgr:14.5.0
+    environment:
+      POSTGRESQL_POSTGRES_PASSWORD: TEREKHOV_214
+      POSTGRESQL_USERNAME: TEREKHOV_214
+      POSTGRESQL_PASSWORD: TEREKHOV_214
+      POSTGRESQL_DATABASE: TEREKHOV_214_hospital
+      REPMGR_PASSWORD: repmgrpassword
+      REPMGR_PRIMARY_HOST: postgres-master-hospital
+      REPMGR_PARTNER_NODES: postgres-master-hospital,postgres-slave-hospital
+      REPMGR_NODE_NAME: node-6
+      REPMGR_NODE_NETWORK_NAME: postgres-slave-hospital
+    ports:
+      - "5437:5432"
+    depends_on:
+      - postgres-master-hospital
+    volumes:
+      - postgres_slave_data_hospital:/bitnami/postgresql
+
+volumes:
+  postgres_master_data_library:
+    driver: local
+  postgres_master_data_trains:
+    driver: local
+  postgres_master_data_hospital:
+    driver: local
+
+  postgres_slave_data_library:
+    driver: local
+  postgres_slave_data_trains:
+    driver: local
+  postgres_slave_data_hospital:
+    driver: local
